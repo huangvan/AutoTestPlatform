@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block beforehead %}
+{% endblock %}
+
+{% block page_content %}
+<table class="table">
+  <thead>
+    <tr>
+      <th>编号</th>
+      <th>用例</th>
+      <th>所属服务</th>
+      <th>是否录制</th>
+      <th>测试结果</th>
+  </thead>
+  <tbody>
+    <tr class="success">
+      <td>{{ case.id }}</td>
+      <td>{{ case.title }}</td>
+      <td>{{ case.server }}</td>
+      <td>
+            <script>
+                switch({{ case.mock_status }}){
+                    case 0:
+                         document.write("否");
+                         break;
+                    case 1:
+                         document.write("是");
+                         break;
+                     default:
+                         document.write("未知");
+                }
+            </script>
+      </td>
+      <td>
+            <script>
+                switch({{ case.status }}){
+                    case 0:
+                         document.write("未执行");
+                         break;
+                    case 1:
+                         document.write("通过");
+                         break;
+                     case 2:
+                         document.write("失败");
+                         break;
+                     default:
+                         document.write("阻塞");
+                }
+            </script>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<form method="post" action="/reset/{{case.id}}">
+    {{ form.csrf_token }}
+    <a><button class="btn btn-primary" type="submit">重置</button></a>
+</form>
+
+{% endblock %}

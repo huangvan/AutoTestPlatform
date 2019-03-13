@@ -1,0 +1,54 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
+开思自动化平台</title>
+<link rel="shortcut icon" href="/static/img/favicon.ico">
+{% endblock %}
+
+{% block navbar %}
+    <nav class="navbar navbar-default container">
+	    <div>
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="" class="navbar-brand">
+                        <img style="height:25px;" src="/static/img/LOGO.png?version=1550042297211" alt>
+                    </a>
+                </li>
+                {% if current_user.is_authenticated %}
+                <li><a href="{{ url_for('show_case') }}">个人工作台</a></li>
+                <li class="active"><a href="{{ url_for('show_case') }}">功能测试</a></li>
+                <li><a href="{{ url_for('show_case') }}">契约测试</a></li>
+                <li><a href="{{ url_for('show_case') }}">平台管理</a></li>
+                {% else %}
+                <li><a href=#>开思自动化平台</a></li>
+                {% endif %}
+            </ul>
+	    </div>
+        <style type="text/css"> .navbar-default {background-color:#DF333B;border-color:#DF333B;}</style>
+        <style type="text/css"> .navbar-default .navbar-nav > li > a { color: #FFFFFF; font-size: 15px; font-family: "Microsoft YaHei";}</style>
+        <style type="text/css"> .navbar-default .navbar-nav > .active > a {background-color:#C6242C; color: #FFFFFF; }</style>
+        <!-- logout links -->
+        {% if current_user.is_authenticated %}
+            <ul class="nav navbar-nav pull-right">
+                <li><a href="{{ url_for('logout') }}"><span class="glyphicon glyphicon-log-out"></span> 退出</a></li>
+            </ul>
+        {% endif %}
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <!-- flash message -->
+        {% for message in get_flashed_messages() %}
+        <div class="alert alert-warning alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert">
+                <span aria-hidden="true">&times;</span>
+                <span class="sr-only">close</span></button>
+            {{ message }}
+        </div>
+        {% endfor %}
+
+        <!-- body block -->
+        {% block page_content %} {% endblock %}
+    </div>
+{% endblock %}

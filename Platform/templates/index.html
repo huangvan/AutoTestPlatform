@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block beforehead %}
+{% endblock %}
+
+{% block page_content %}
+<table class="table table-hover">
+    <thead>
+        <th class="active">编号</th>
+        <th class="active">用例</th>
+        <th class="active">所属服务</th>
+        <th class="active">创建人</th>
+        <th class="active">是否录制</th>
+        <th class="active">测试结果</th>
+        <th class="active">创建时间</th>
+        <th class='active'>操作</th> 
+    </thead>
+    <tbody>
+        {% for case in caselists %}
+            <!-- tr -->
+            {% if case.status %} <tr class="success">
+            {% else %} <tr class="info"> {% endif %}
+                <td>{{ loop.index }}</td>
+                <td>{{ case.title }}</td>
+                <td>{{ case.server }}</td>
+                <td>{{ case.user_name }}</td>
+                <td>
+                    <script>
+                        switch({{ case.mock_status }}){
+                            case 0:
+                                 document.write("否");
+                                 break;
+                            case 1:
+                                 document.write("是");
+                                 break;
+                             default:
+                                 document.write("未知");
+                        }
+                    </script>
+                </td>
+                <td>
+                    <script>
+                        switch({{ case.status }}){
+                            case 0:
+                                 document.write("未执行");
+                                 break;
+                            case 1:
+                                 document.write("通过");
+                                 break;
+                             case 2:
+                                 document.write("失败");
+                                 break;
+                             default:
+                                 document.write("阻塞");
+                        }
+                    </script>
+                </td>
+                <td>
+                    <script>
+                        function getLocalTime(nS) {return new Date(parseInt(nS) * 1000).toLocaleString('chinese',{hour12:false}).replace(/:\d{1,2}$/,' ');}
+                        document.write(getLocalTime({{ case.create_time }}));
+                    </script>
+                </td>
+                <td>
+                    <a href="{{ url_for('reset_case', id=case.id) }}" class="btn btn-warning" role ="button">重置</a>
+                    <a href="{{ url_for('change_case', id=case.id) }}" class="btn btn-success" role ="button">修改</a>
+                    {% if case.mock_status %}
+                    <a href="{{ url_for('run_case', id=case.id) }}" class="btn btn-success" role ="button">执行</a>
+                    {% else %}
+                    <a href="{{ url_for('mock_case', id=case.id) }}" class="btn btn-success" role ="button">录制</a>
+                    {% endif %}
+                    {% if case.status %}
+                    <a href="{{ url_for('case_script', id=case.id) }}" class="btn btn-success" role ="button">提交</a>
+                    {% else %}
+                    <script type="text/javascript">
+                        function todel() {
+                            var msg = "确认是否要删除";
+                            if (confirm(msg)==true){
+                            return true;
+                            }else{
+                            return false;
+                            }
+                        }
+                    </script>
+                    <a href="{{ url_for('delete_case', id=case.id) }}" class="btn btn-danger" role ="button" onclick="javascript:return todel()">删除</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal"> 添加 </button>
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog"> <div class="modal-content">
+
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel" align="center">添加用例</h4>
+      </div>
+
+      <div class="modal-body">
+          <div class="row">
+              <div class="col-md-8 col-md-offset-2"> {{ wtf.quick_form(form, form_type="horizontal") }} </div>
+          </div>
+          <style type="text/css"> .btn-default {color: #fff;background-color:#337ab7;border-color:#2e6da4;}</style>
+      </div> <!-- modal body -->
+
+    </div> </div>
+</div>
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myTest"> 批量执行 </button>
+<!-- Modal -->
+<div class="modal fade" id="myTest" tabindex="-1" role="dialog" aria-labelledby="myTestLabel" aria-hidden="true">
+  <div class="modal-dialog"> <div class="modal-content">
+
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myTestLabel" align="center">批量执行用例</h4>
+      </div>
+
+      <div class="modal-body">
+          <div class="row">
+              <div class="col-md-8 col-md-offset-2"> {{ wtf.quick_form(form, form_type="horizontal") }} </div>
+          </div>
+          <style type="text/css"> .btn-default {color: #fff;background-color:#337ab7;border-color:#2e6da4;}</style>
+      </div> <!-- modal body -->
+
+    </div> </div>
+</div>
+
+{% endblock %}

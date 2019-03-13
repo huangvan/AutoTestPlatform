@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block beforehead %}
+{% endblock %}
+
+{% block page_content %}
+<table class="table">
+  <thead>
+    <tr>
+      <th>编号</th>
+      <th>用例</th>
+      <th>所属服务</th>
+      <th>测试结果</th>
+  </thead>
+  <tbody>
+    <tr class="success">
+      <td>{{ case.id }}</td>
+      <td>{{ case.title }}</td>
+      <td>{{ case.server }}</td>
+      <td>
+            <script>
+                switch({{ case.status }}){
+                    case 0:
+                         document.write("未执行");
+                         break;
+                    case 1:
+                         document.write("通过");
+                         break;
+                     case 2:
+                         document.write("失败");
+                         break;
+                     default:
+                         document.write("阻塞");
+                }
+            </script>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<script language="javascript">
+    function save(){
+        document.script.action="/script/{{case.id}}";
+        document.script.submit();
+    }
+    function run(){
+        document.script.action="/run/{{case.id}}";
+        document.script.submit();
+    }
+</script>
+<form method="post" name="script">
+    {{ form.csrf_token }}
+    <textarea name="script" style="width:100%;height: 300px">{{ case.script }}</textarea>
+    <input class="btn btn-primary" type="button" name="btn2" value="保存" onclick="save();">
+    {% if case.mock_status ==1 %}
+    <input class="btn btn-primary" type="button" name="btn1" value="执行" onclick="run();">
+    {% endif %}
+</form>
+
+
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+<table class="table">
+  <h4>自动化接口录制</h4>
+  <thead>
+    <tr>
+      <th>编号</th>
+      <th>用例</th>
+      <th>所属服务</th>
+      <th>操作</th></tr>
+  </thead>
+  <tbody>
+    <tr class="success">
+      <td>{{ case.id }}</td>
+      <td>{{ case.title }}</td>
+      <td>{{ case.server }}</td>
+      <td>
+            <script type="text/javascript">
+                function todel() {
+                    var msg = "点击确定启动录制，然后在环境进行该用例操作进行接口录制！";
+                    if (confirm(msg)==true){
+                    return true;
+                    }else{
+                    return false;
+                    }
+                }
+            </script>
+            <a href="{{ url_for('record_case', id=case.id) }}" class="btn btn-primary" type="submit" role ="button" onclick="javascript:return todel()">开始录制</a>
+            <a href="{{ url_for('stop_record', id=case.id) }}" class="btn btn-success" type="submit">结束录制</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+{% endblock %}
