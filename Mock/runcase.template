@@ -4,39 +4,53 @@
 
 
 import requests
+import json
 
 
 class ${CLASSNAME}(object):
     url_path = ${PATH}
+    session = requests.session()
     print(url_path)
 
     @classmethod
     def setup(cls):
-        pass
+        base_url = 'https://ec-test.casstime.com'
+        path_url = '/passport/login'
+        params = {'logintype': 'PASSWORD', 'username': 'casslb', 'password': 'Cass1713'}
+        response = cls.session.post(base_url + path_url, data=params)
+        assert response.status_code == 200
+        assert '会员登录' not in response.text
+        print('登录成功！')
 
     @classmethod
     def mapping(cls):
         print('mapping...')
         # 清空mock服务中的mapping文件
-        headers = {"Accept": "application/json"}
+        headers = {"Accept": "application/json", "Accept-type": "application/json"}
         response = requests.delete(cls.url_path + '/__admin/mappings', headers=headers)
         assert response.status_code == 200
         # 生成mapping
-        headers = {"content-type": "application/json"}
+        headers = {"Content-type": "application/json"}
+
+        # 第一个mapping为proxy，透传本组服务的请求
+        body = {'request': {'urlPattern': '.*'}, 'response': {'proxyBaseUrl': 'http://test-api.intra.casstime.com'}}
+        response = requests.post(cls.url_path + '/__admin/mappings', headers=headers, data=json.dumps(body))
+        assert response.status_code == 201
+
 ${MAP}
         # 生成mapping文件
-        headers = {"Content-Type": "application/json", "content-type": "application/json"}
+        headers = {"Content-Type": "application/json", "Accept-type": "application/json"}
         response = requests.post(cls.url_path + '/__admin/mappings/save', headers=headers)
         assert response.status_code == 200
         # 使mapping文件生效
-        headers = {"Content-Type": "application/json", "content-type": "application/json"}
+        headers = {"Content-Type": "application/json", "Accept-type": "application/json"}
         response = requests.post(cls.url_path + '/__admin/mappings/reset', headers=headers)
         assert response.status_code == 200
 
     @classmethod
     def run(cls):
         print('testcase running...')
-        response = requests.get(cls.url_path + '/goldcoin-service/goldcoin/account/garage/company/14305')
+        response = cls.session.get(cls.url_path + '/goldcoin-service/goldcoin/account/garage/company/14305')
         assert response.status_code == 200
         print(response.text)
 

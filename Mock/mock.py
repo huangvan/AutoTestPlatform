@@ -46,6 +46,9 @@ class MockServerRecordStoppedError(MockServerException):
     pass
 
 
+path_parent = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+
+
 # mock服务管理
 class MockServerManage(object):
     def __init__(self, run_cmd):
@@ -126,7 +129,7 @@ def run_mock_server():
 
 
 def stop_mock_server():
-    mock_host_url = host_url + ':' + wiremock_port
+    mock_host_url = wiremock_url + ':' + wiremock_port
     logging.debug('stop_mock_server: %s' % mock_host_url)
     print('Stop Mock Server...')
     try:
@@ -157,8 +160,8 @@ class MockRecordManage(object):
                         }
         self.is_starting = False
         self.http_session = requests.session()
-        self.mock_case_name = case_name
-        self.mock_server_name = server_name
+        self.mock_case_name = ''
+        self.mock_server_name = ''
 
     def start_record(self):
         logging.debug(self.mock_host_url)
@@ -186,11 +189,11 @@ class MockRecordManage(object):
                     self.headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
                     self.http_session.headers.update(self.headers)
                     # 启动录制请求
-                    record_data = {"targetBaseUrl": self.record_url}
-                    start_response = self.http_session.post(url=self.mock_host_url+ '/__admin/recordings/start', data=str(record_data).encode(encoding='UTF-8', errors='strict'))
+                    record_data = {"targetBaseUrl": self.record_url, "filters": {"urlPathPattern": QDD_URL, "allowNonProxied": True}}
+                    start_response = self.http_session.post(url=self.mock_host_url + '/__admin/recordings/start', data=json.dumps(record_data))
                     if start_response.status_code == 200:
                         # 再次查看服务状态
-                        response = self.http_session.get(url=self.mock_host_url+ '/__admin/recordings/status')
+                        response = self.http_session.get(url=self.mock_host_url + '/__admin/recordings/status')
                         response_json = json.loads(response.text)
                         if response_json["status"] == "Recording":
                             self.is_starting = True
@@ -206,32 +209,67 @@ class MockRecordManage(object):
                             'Mock record start error, status_code: {}!'.format(start_response.status_code)
                         )
 
-    def create_case(self, stop_response_json={}):
-        if not os.path.exists('./Mock/case/' + self.mock_server_name):
-            os.makedirs('./Mock/case/' + self.mock_server_name)
-        elif self.mock_case_name == '':
-            case_no[self.mock_server_name] += len(os.listdir('./Mock/case/' + self.mock_server_name + '/'))
-            self.mock_case_name = 'TC_' + self.mock_server_name + '_' + str(case_no[self.mock_server_name]) + '.py'
-            logging.debug('case_no is %d' % case_no[self.mock_server_name])
-        filename = './Mock/case/' + self.mock_server_name + '/' + self.mock_case_name
-        logging.debug(filename)
-        with codecs.open(filename, 'a+', encoding='utf-8') as f:
+    def create_file(self, name, server_name):
+        filename = name
+        self.mock_server_name = server_name
+        if not os.path.exists(path_parent + '/Case/FunctionTest/' + self.mock_server_name):
+            os.makedirs(path_parent + '/Case/FunctionTest/' + self.mock_server_name)
+        elif filename == '':
+            case_no[self.mock_server_name] += len(os.listdir(path_parent + '/Case/FunctionTest/' + self.mock_server_name + '/'))
+            filename = 'TC_' + self.mock_server_name + '_' + str(case_no[self.mock_server_name]) + '.py'
+        file = path_parent + '/Case/FunctionTest/' + self.mock_server_name + '/' + filename + '.py'
+        logging.debug(file)
+        self.mock_case_name = file
+
+    def change_file(self, name, old_name, server_name):
+        filename_new = name
+        filename_old = old_name
+        self.mock_server_name = server_name
+        if not os.path.exists(path_parent + '/Case/FunctionTest/' + self.mock_server_name):
+            os.makedirs(path_parent + '/Case/FunctionTest/' + self.mock_server_name)
+        elif filename_new == '':
+            case_no[self.mock_server_name] += len(os.listdir(path_parent + '/Case/FunctionTest/' + self.mock_server_name + '/'))
+            filename_new = 'TC_' + self.mock_server_name + '_' + str(case_no[self.mock_server_name]) + '.py'
+            file_new = path_parent + '/Case/FunctionTest/' + self.mock_server_name + '/' + filename_new
+            file = file_new
+        else:
+            file_new = path_parent + '/Case/FunctionTest/' + self.mock_server_name + '/' + filename_new + '.py'
+            file_old = path_parent + '/Case/FunctionTest/' + self.mock_server_name + '/' + filename_old + '.py'
+            if os.path.exists(file_old):
+                os.rename(file_old, file_new)
+            file = file_new
+        logging.debug(file)
+        self.mock_case_name = file
+
+    def delete_file(self, name, server_name):
+        filename = name
+        file = path_parent + '/Case/FunctionTest/' + server_name + '/' + filename + '.py'
+        if not os.path.exists(path_parent + '/Case/FunctionTest/' + server_name):
+            print('%s目录不存在' % server_name)
+        elif os.path.exists(file):
+            os.remove(file)
+        else:
+            print('该文件不存在')
+
+    def create_case(self, stop_response_json):
+        with codecs.open(self.mock_case_name, 'w+', encoding='utf-8') as f:
             lines = []
             map_data = []
             # 设置生成mapping模板
-            # 缩进8个，python不能空格tab混用
+            # 缩进8个空格，python不能空格tab混用
             space_eight = '        '
             tmp_line = Template(space_eight + "body = ${BODY}\n" + space_eight +
-                           "response = requests.post(cls.url_path + '/__admin/mappings', headers=headers, data=str(body).encode('utf-8'))\n" + space_eight +
+                           "response = requests.post(cls.url_path + '/__admin/mappings', headers=headers, data=json.dumps(body))\n" + space_eight +
                            "assert response.status_code == 201\n")
             # 读取用例模板
-            template_file = codecs.open(r'runcase.template', 'r', encoding='utf-8')
+            template_file = codecs.open(path_parent + '/Mock/' +'runcase.template', 'r', encoding='utf-8')
             tmp_file = Template(template_file.read())
             # 替换mapping模板内容
             for i in range(len(stop_response_json['mappings'])):
-                if 'persistent' in stop_response_json['mappings'][i].keys():
-                    stop_response_json['mappings'][i]['persistent'] = str(stop_response_json['mappings'][i]['persistent'])
+            #     if 'persistent' in stop_response_json['mappings'][i].keys():
+            #         stop_response_json['mappings'][i]['persistent'] = str(stop_response_json['mappings'][i]['persistent'])
                 map_data.append(tmp_line.substitute(BODY=stop_response_json['mappings'][i]))
+            print(map_data)
             # 替换用例模板内容
             lines.append(tmp_file.substitute(
                 CLASSNAME=self.mock_server_name + 'Test',
@@ -240,6 +278,10 @@ class MockRecordManage(object):
             # 根据模板写入用例文件
             f.writelines(lines)
             template_file.close()
+
+    def update_case(self, sql_script):
+        with codecs.open(self.mock_case_name, 'w+', encoding='utf-8') as f:
+            f.write(sql_script)
 
     def stop_record(self):
         if not self.is_starting:
@@ -250,7 +292,7 @@ class MockRecordManage(object):
         else:
             # 查看服务状态
             try:
-                response = self.http_session.get(url=self.mock_host_url+ '/__admin/recordings/status')
+                response = self.http_session.get(url=self.mock_host_url + '/__admin/recordings/status')
             except (ConnectionRefusedError, requests.exceptions.ConnectionError):
                 raise MockServerNotStartedError(
                     'MockServer do not started on port {}'.format(wiremock_port)
@@ -264,7 +306,7 @@ class MockRecordManage(object):
                     )
                 else:
                     # 停止录制请求
-                    stop_response = self.http_session.post(url=self.mock_host_url+ '/__admin/recordings/stop')
+                    stop_response = self.http_session.post(url=self.mock_host_url + '/__admin/recordings/stop')
                     stop_response_json = json.loads(stop_response.text)
                     logging.debug(stop_response_json)
                     if len(stop_response_json['mappings']):
@@ -273,7 +315,7 @@ class MockRecordManage(object):
                         print('recorded no data!')
                     if stop_response.status_code == 200:
                         # 再次查看服务状态
-                        response = self.http_session.get(url=self.mock_host_url+ '/__admin/recordings/status')
+                        response = self.http_session.get(url=self.mock_host_url + '/__admin/recordings/status')
                         response_json = json.loads(response.text)
                         if response_json["status"] == "Stopped":
                             self.is_starting = False
@@ -298,7 +340,7 @@ if __name__ == "__main__":
     #     # wm.stop()
     #     # print(wm.start().__subprocess.stdout.readlines())
     #     print('end!')
-    # mock_record = MockRecordManage(base_url, host_url, wiremock_port)
+    # mock_record = MockRecordManage(base_url, wiremock_url, wiremock_port)
     # mock_record.start_record()
     # time.sleep(30)
     # mock_record.stop_record()

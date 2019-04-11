@@ -40,21 +40,20 @@
 </table>
 <script language="javascript">
     function save(){
-        document.script.action="/script/{{case.id}}";
+        document.script.action="/git/{{case.id}}";
         document.script.submit();
     }
     function run(){
-        document.script.action="/run/{{case.id}}";
+        document.script.action="/git/{{case.id}}";
         document.script.submit();
     }
 </script>
 <form method="post" name="script">
     {{ form.csrf_token }}
     <textarea name="script" style="width:100%;height: 300px">{{ case.script }}</textarea>
-    <textarea readonly="readonly" style="width:100%;height: 50px">执行结果:</textarea>
     <input class="btn btn-primary" type="button" name="btn2" value="保存" onclick="save();">
-    {% if case.mock_status ==1 %}
-    <input class="btn btn-primary" type="button" name="btn1" value="执行" onclick="run();">
+    {% if case.status !=0 %}
+    <input class="btn btn-primary" type="button" name="btn1" value="提交" onclick="run();">
     {% endif %}
 </form>
 

@@ -9,6 +9,7 @@
         <th class="active">编号</th>
         <th class="active">用例</th>
         <th class="active">所属服务</th>
+        <th class="active">脚本名称</th>
         <th class="active">创建人</th>
         <th class="active">是否录制</th>
         <th class="active">测试结果</th>
@@ -23,6 +24,7 @@
                 <td>{{ loop.index }}</td>
                 <td>{{ case.title }}</td>
                 <td>{{ case.server }}</td>
+                <td>{{ case.script_name }}</td>
                 <td>{{ case.user_name }}</td>
                 <td>
                     <script>
@@ -70,7 +72,7 @@
                     <a href="{{ url_for('mock_case', id=case.id) }}" class="btn btn-success" role ="button">录制</a>
                     {% endif %}
                     {% if case.status %}
-                    <a href="{{ url_for('case_script', id=case.id) }}" class="btn btn-success" role ="button">提交</a>
+                    <a href="{{ url_for('git_case', id=case.id) }}" class="btn btn-success" role ="button">提交</a>
                     {% else %}
                     <script type="text/javascript">
                         function todel() {
@@ -88,8 +90,31 @@
             </tr>
         {% endfor %}
     </tbody>
-</table>
 
+</table>
+<div class="text-center">
+    <ul class="pagination">
+           {% if page_data.show_index_status==1%}
+               <li class=''><a href="{{ url_for('case_list', p=1) }}">首页</a></li>
+               <li class=''><a href="{{ url_for('case_list', p=page_data.p-1)}}">上一页</a></li>
+          {%endif%}
+
+           {% for num in page_data.dic_list %}
+               {% if num==page_data.p%}
+                 <li class="active"><a href="{{ url_for('case_list', p=num)}}">{{num}}</a></li>
+               {%else%}
+                   <li><a href="{{ url_for('case_list', p=num)}}">{{num}}</a></li>
+               {%endif%}
+            {%endfor%}
+
+           {% if page_data.p < page_data.total%}
+                <li><a href="{{ url_for('case_list', p=page_data.p+1)}}">下一页</a></li>
+                <li><a href="{{ url_for('case_list', p=page_data.total)}}">尾页</a></li>
+           {%endif%}
+        <li class="disabled"><a>共{{page_data.total}}页</a></li>
+     </ul>
+
+</div>
 <!-- Button trigger modal -->
 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal"> 添加 </button>
 <!-- Modal -->
@@ -112,8 +137,9 @@
 </div>
 
 <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myTest"> 批量执行 </button>
+<!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myTest"> 批量执行 </button>-->
 <!-- Modal -->
+<!--
 <div class="modal fade" id="myTest" tabindex="-1" role="dialog" aria-labelledby="myTestLabel" aria-hidden="true">
   <div class="modal-dialog"> <div class="modal-content">
 
@@ -127,9 +153,11 @@
               <div class="col-md-8 col-md-offset-2"> {{ wtf.quick_form(form, form_type="horizontal") }} </div>
           </div>
           <style type="text/css"> .btn-default {color: #fff;background-color:#337ab7;border-color:#2e6da4;}</style>
-      </div> <!-- modal body -->
+      </div>
 
     </div> </div>
 </div>
+-->
+
 
 {% endblock %}

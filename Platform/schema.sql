@@ -8,12 +8,14 @@ CREATE TABLE IF NOT EXISTS `caselist` (
   `mock_status` int(2) NOT 0 COMMENT '是否已经录制接口',
   `status` int(2) NOT 0 COMMENT '测试结果',
   `reset_status` int(2) NOT 0 COMMENT '重置标志',
+  `script_name` varchar(256) NOT NULL,
+  `script_name_old` varchar(256) NOT NULL,
   `script` longtext,
   `create_time` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
-insert into caselist(id, user_id, user_name, title, server, mock_status, status, reset_status, script, create_time) values(1, 1, 'admin', '商城直接购买商品，白条支付', 'QDD', '0', '0', '0', '',1549639959), (2, 1, 'admin', '商城直接购买商品，挂账支付', 'QDD', '1', '1', '1', '', 1549640336), (3, 1, 'admin', '商城直接购买商品，微信支付', 'QDD', '1', '0', '0', '',1549640355);
+insert into caselist(id, user_id, user_name, title, server, mock_status, status, reset_status, script_name, script_name_old, script, create_time) values(1, 1, 'admin', '商城直接购买商品，白条支付', 'QDD', '0', '0', '0', 'TC_QDD_baitiao001', 'TC_QDD_baitiao001', '',1549639959), (2, 1, 'admin', '商城直接购买商品，挂账支付', 'QDD', '1', '1', '1', 'TC_QDD_guazhang001', 'TC_QDD_guazhang001', '', 1549640336), (3, 1, 'admin', '商城直接购买商品，微信支付', 'QDD', '1', '0', '0', 'TC_QDD_weichat001', 'TC_QDD_weichat001', '',1549640355);
 
 DROP TABLE IF EXISTS `base_user`;
 CREATE TABLE `base_user` (

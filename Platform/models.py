@@ -25,10 +25,12 @@ class CaseList(db.Model):
     mock_status = db.Column(db.Integer, nullable=False)
     status = db.Column(db.Integer, nullable=False)
     reset_status = db.Column(db.Integer, nullable=False)
+    script_name = db.Column(db.String(256), nullable=False)
+    script_name_old = db.Column(db.String(256), nullable=False)
     script = db.Column(db.Text, nullable=False)
     create_time = db.Column(db.Integer, nullable=False)
 
-    def __init__(self, user_id, user_name, title, server, mock_status, status, reset_status, script):
+    def __init__(self, user_id, user_name, title, server, mock_status, status, reset_status, script_name, script_name_old, script):
         self.user_id = user_id
         self.user_name = user_name
         self.title = title
@@ -36,6 +38,8 @@ class CaseList(db.Model):
         self.mock_status = mock_status
         self.status = status
         self.reset_status = reset_status
+        self.script_name = script_name
+        self.script_name_old = script_name_old
         self.script = script
         self.create_time = time.time()
 
