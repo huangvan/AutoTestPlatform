@@ -14,7 +14,7 @@ import logging
 import time
 
 # 日志管理
-level_name = logging.WARNING
+level_name = logging.DEBUG
 FORMAT = "%(asctime)s %(levelname)s %(filename)s %(lineno)d %(message)s"
 logging.basicConfig(level=level_name, format=FORMAT)
 log_name = './log/' + 'mockserver' + '_' + 'log' + '_' + time.strftime("%Y-%m-%d", time.localtime()) + '.log'

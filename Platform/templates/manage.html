@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% set active_page = "manage" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+
+<ul class="nav nav-tabs">
+ <li class="active"><a href="#tab1" data-toggle="tab">用户管理</a></li>
+ <li><a href="#tab2" data-toggle="tab">微服务管理</a></li>
+ <li><a href="#tab3" data-toggle="tab">Mock服务管理</a></li>
+ <li><a href="#tab4" data-toggle="tab">Pact服务管理</a></li>
+</ul>
+<div class="tab-content">
+ <div class="active tab-pane" id="tab1">
+	 <table class="table">
+		<th>用户账号</th><th>用户名称</th><th>所属服务</th><th>操作</th>
+         {% if current_user.username == "admin" %}
+            {% for user in all_user %}
+                <tr class="info"><td>{{ user.username }}</td><td>{{ user.uname }}</td><td>{{ user.userver }}</td>
+                    <td>
+                        <a href="{{ url_for('change_user', username=user.username) }}" class="btn btn-info" role ="button">修改</a>
+                        {% if user.user_status %}
+                            <a href="{{ url_for('disable_user', username=user.username) }}" class="btn btn-danger" role ="button">禁用</a>
+                        {% else %}
+                            <a href="{{ url_for('disable_user', username=user.username) }}" class="btn btn-success" role ="button">启用</a>
+                        {% endif %}
+                    </td></tr>
+            {% endfor %}
+         	 <table class="table">
+                <tr class="info">
+                        <a href="{{ url_for('add_user') }}" class="btn btn-info" role ="button">添加</a>
+                </tr>
+             </table>
+         {% else %}
+            <tr class="info"><td>{{ current_user.username }}</td><td>{{ current_user.uname }}</td><td>{{ current_user.userver }}</td>
+                <td>
+                    <a href="{{ url_for('change_user', username=current_user.username) }}" class="btn btn-info" role ="button">修改</a>
+                </td></tr>
+         {% endif %}
+	 </table>
+ </div>
+ <div class="tab-pane" id="tab2">222</div>
+ <div  class="tab-pane" id="tab3">333</div>
+ <div class="tab-pane" id="tab4">444</div>
+</div>
+
+{% endblock %}

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% set active_page = "index" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block beforehead %}
@@ -40,7 +41,7 @@
 </table>
 <script language="javascript">
     function save(){
-        document.script.action="/script/{{case.id}}";
+        document.script.action="/update/{{case.id}}";
         document.script.submit();
     }
     function run(){

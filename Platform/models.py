@@ -27,10 +27,11 @@ class CaseList(db.Model):
     reset_status = db.Column(db.Integer, nullable=False)
     script_name = db.Column(db.String(256), nullable=False)
     script_name_old = db.Column(db.String(256), nullable=False)
-    script = db.Column(db.Text, nullable=False)
+    sprint = db.Column(db.Integer, nullable=False)
+    script = db.Column(db.Text, nullable=True)
     create_time = db.Column(db.Integer, nullable=False)
 
-    def __init__(self, user_id, user_name, title, server, mock_status, status, reset_status, script_name, script_name_old, script):
+    def __init__(self, user_id, user_name, title, server, mock_status, status, reset_status, script_name, script_name_old, script, sprint):
         self.user_id = user_id
         self.user_name = user_name
         self.title = title
@@ -40,6 +41,7 @@ class CaseList(db.Model):
         self.reset_status = reset_status
         self.script_name = script_name
         self.script_name_old = script_name_old
+        self.sprint = sprint
         self.script = script
         self.create_time = time.time()
 
@@ -49,7 +51,16 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(24), nullable=False)
     password = db.Column(db.String(24), nullable=False)
+    uname = db.Column(db.String(24), nullable=False)
+    userver = db.Column(db.String(256), nullable=False)
+    user_status = db.Column(db.Integer, nullable=False)
 
-    def __init__(self, username, password):
+    def __init__(self, username, password, uname, userver, user_status):
         self.username = username
         self.password = password
+        self.uname = uname
+        self.userver = userver
+        self.user_status = user_status
+
+
+

@@ -1,5 +1,5 @@
 {% extends "bootstrap/base.html" %}
-
+{% set active_page = active_page|default('home') -%}
 {% block title %}
 开思自动化平台</title>
 <link rel="shortcut icon" href="/static/img/favicon.ico">
@@ -8,28 +8,31 @@
 {% block navbar %}
     <nav class="navbar navbar-default container">
 	    <div>
-            <ul class="nav navbar-nav">
+            <ul class="nav navbar-nav"  id="menu">
                 <li>
                     <a href="" class="navbar-brand">
                         <img style="height:25px;" src="/static/img/LOGO.png?version=1550042297211" alt>
                     </a>
                 </li>
                 {% if current_user.is_authenticated %}
-                <li><a href="{{ url_for('show_case') }}">个人工作台</a></li>
-                <li class="active"><a href="{{ url_for('show_case') }}">功能测试</a></li>
-                <li><a href="{{ url_for('show_case') }}">契约测试</a></li>
-                <li><a href="{{ url_for('show_case') }}">平台管理</a></li>
+                <li {% if active_page =="home" %} class="active"{% endif %}><a href="{{ url_for('show_work') }}">个人工作台</a></li>
+                <li {% if active_page =="index" %} class="active"{% endif %}><a href="{{ url_for('show_fuction') }}">功能测试</a></li>
+                <li {% if active_page =="contract" %} class="active"{% endif %}><a href="{{ url_for('show_contract') }}">契约测试</a></li>
+                <li {% if active_page =="manage" %} class="active"{% endif %}><a href="{{ url_for('show_manage') }}">平台管理</a></li>
                 {% else %}
                 <li><a href=#>开思自动化平台</a></li>
                 {% endif %}
             </ul>
 	    </div>
+
         <style type="text/css"> .navbar-default {background-color:#DF333B;border-color:#DF333B;}</style>
         <style type="text/css"> .navbar-default .navbar-nav > li > a { color: #FFFFFF; font-size: 15px; font-family: "Microsoft YaHei";}</style>
         <style type="text/css"> .navbar-default .navbar-nav > .active > a {background-color:#C6242C; color: #FFFFFF; }</style>
+        <style type="text/css"> .navbar-default .navbar-nav > a:active {background-color:#C6242C; color: #FFFFFF; }</style>
         <!-- logout links -->
         {% if current_user.is_authenticated %}
             <ul class="nav navbar-nav pull-right">
+                <li><a>Welcome, {{ current_user.uname }}!</a></li>
                 <li><a href="{{ url_for('logout') }}"><span class="glyphicon glyphicon-log-out"></span> 退出</a></li>
             </ul>
         {% endif %}

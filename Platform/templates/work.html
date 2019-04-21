@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% set active_page = "home" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.14.2/bootstrap-table.css">
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<!-- bootstrap-table.min.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.14.2/bootstrap-table.min.js"></script>
+<!-- 引入中文语言包 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.14.2/locale/bootstrap-table-zh-CN.min.js"></script>
+
+<div class="panel panel-success">
+	<div class="panel-heading">服务测试情况统计</div>
+    <table id="table1"></table>
+</div>
+<script>
+    var server = $('#table1');
+    server.bootstrapTable({
+    method: 'post',
+    url:'/query/server/',
+    dataType : "json",
+    contentType : "application/x-www-form-urlencoded",
+    pagination: true,//是否分页
+    pageSize: 10,//单页记录数
+    pageList: [5, 10, 20, 50],//分页步进值
+    sidePagination: "server",//服务端分页
+    queryParamsType: "limit",//查询参数组织方式
+    queryParams: function getParams(params) {
+        params.other = "otherInfo";
+        return params;
+    },
+    columns: [
+        { field: 'server_name',
+        title: '服务'},
+          { field: 'case_count',
+        title: '用例数量'},
+          { field: 'mock_count',
+        title: '已录制数量'},
+          { field: 'run_count',
+        title: '已执行数量'},
+          { field: 'pass_count',
+        title: '通过数量'},
+          { field: 'run_rate',
+        title: '执行率'},
+          { field: 'pass_rate',
+        title: '通过率'},
+    ]
+});
+</script>
+
+<div class="panel panel-success">
+	<div class="panel-heading">个人测试情况统计</div>
+    <table id="table2"></table>
+
+</div>
+  <script>
+    var user = $('#table2');
+    user.bootstrapTable({
+    method: 'post',
+    url:'/query/user/',
+    dataType : "json",
+    contentType : "application/x-www-form-urlencoded",
+    pagination: true,//是否分页
+    pageSize: 10,//单页记录数
+    pageList: [5, 10, 20, 50],//分页步进值
+    sidePagination: "server",//服务端分页
+    queryParamsType: "limit",//查询参数组织方式
+    queryParams: function getParams(params) {
+        params.other = "otherInfo";
+        return params;
+    },
+    columns: [
+        { field: 'name',
+        title: '用户'},
+          { field: 'case_count',
+        title: '用例数量'},
+          { field: 'mock_count',
+        title: '已录制数量'},
+          { field: 'run_count',
+        title: '已执行数量'},
+          { field: 'pass_count',
+        title: '通过数量'},
+          { field: 'run_rate',
+        title: '执行率'},
+          { field: 'pass_rate',
+        title: '通过率'},
+    ]
+});
+  </script>
+
+<div class="panel panel-success">
+	<div class="panel-heading">当前迭代测试情况统计</div>
+    <table id="table3"></table>
+
+</div>
+<script>
+    var sprint = $('#table3');
+    sprint.bootstrapTable({
+    method: 'post',
+    url:'/query/server/',
+    dataType : "json",
+    contentType : "application/x-www-form-urlencoded",
+    pagination: true,//是否分页
+    pageSize: 10,//单页记录数
+    pageList: [5, 10, 20, 50],//分页步进值
+    sidePagination: "server",//服务端分页
+    queryParamsType: "limit",//查询参数组织方式
+    queryParams: function getParams(params) {
+        params.other = "otherInfo";
+        return params;
+    },
+    columns: [
+        { field: 'server_name',
+        title: '服务'},
+          { field: 'case_count',
+        title: '用例数量'},
+          { field: 'mock_count',
+        title: '已录制数量'},
+          { field: 'run_count',
+        title: '已执行数量'},
+          { field: 'pass_count',
+        title: '通过数量'},
+          { field: 'run_rate',
+        title: '执行率'},
+          { field: 'pass_rate',
+        title: '通过率'},
+    ]
+});
+</script>
+
+{% endblock %}

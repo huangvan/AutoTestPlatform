@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% set active_page = "index" %}
+{% set active_page = "contract" %}
 {% import "bootstrap/wtf.html" as wtf %}
 {% block beforehead %}
 {% endblock %}
@@ -8,12 +8,11 @@
 <table class="table table-hover">
     <thead>
         <th class="active">编号</th>
-        <th class="active">用例</th>
+        <th class="active">契约接口用例</th>
         <th class="active">所属服务</th>
+        <th class="active">服务提供方</th>
         <th class="active">脚本名称</th>
-        <th class="active">迭代版本</th>
         <th class="active">创建人</th>
-        <th class="active">是否录制</th>
         <th class="active">测试结果</th>
         <th class="active">创建时间</th>
         <th class='active'>操作</th> 
@@ -26,23 +25,9 @@
                 <td>{{ loop.index }}</td>
                 <td>{{ case.title }}</td>
                 <td>{{ case.server }}</td>
+                <td>SOS</td>
                 <td>{{ case.script_name }}</td>
-                <td>{{ case.sprint }}</td>
                 <td>{{ case.user_name }}</td>
-                <td>
-                    <script>
-                        switch({{ case.mock_status }}){
-                            case 0:
-                                 document.write("否");
-                                 break;
-                            case 1:
-                                 document.write("是");
-                                 break;
-                             default:
-                                 document.write("未知");
-                        }
-                    </script>
-                </td>
                 <td>
                     <script>
                         switch({{ case.status }}){
@@ -98,21 +83,21 @@
 <div class="text-center">
     <ul class="pagination">
            {% if page_data.show_index_status==1%}
-               <li class=''><a href="{{ url_for('case_list', p=1) }}">首页</a></li>
-               <li class=''><a href="{{ url_for('case_list', p=page_data.p-1)}}">上一页</a></li>
+               <li class=''><a href="{{ url_for('case_contract', p=1) }}">首页</a></li>
+               <li class=''><a href="{{ url_for('case_contract', p=page_data.p-1)}}">上一页</a></li>
           {%endif%}
 
            {% for num in page_data.dic_list %}
                {% if num==page_data.p%}
-                 <li class="active"><a href="{{ url_for('case_list', p=num)}}">{{num}}</a></li>
+                 <li class="active"><a href="{{ url_for('case_contract', p=num)}}">{{num}}</a></li>
                {%else%}
-                   <li><a href="{{ url_for('case_list', p=num)}}">{{num}}</a></li>
+                   <li><a href="{{ url_for('case_contract', p=num)}}">{{num}}</a></li>
                {%endif%}
             {%endfor%}
 
            {% if page_data.p < page_data.total%}
-                <li><a href="{{ url_for('case_list', p=page_data.p+1)}}">下一页</a></li>
-                <li><a href="{{ url_for('case_list', p=page_data.total)}}">尾页</a></li>
+                <li><a href="{{ url_for('case_contract', p=page_data.p+1)}}">下一页</a></li>
+                <li><a href="{{ url_for('case_contract', p=page_data.total)}}">尾页</a></li>
            {%endif%}
         <li class="disabled"><a>共{{page_data.total}}页</a></li>
      </ul>
