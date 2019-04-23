@@ -24,11 +24,11 @@
             {% if case.status %} <tr class="success">
             {% else %} <tr class="info"> {% endif %}
                 <td>{{ loop.index }}</td>
-                <td>{{ case.title }}</td>
-                <td>{{ case.server }}</td>
-                <td>{{ case.script_name }}</td>
-                <td>{{ case.sprint }}</td>
-                <td>{{ case.user_name }}</td>
+                <td class="autocut">{{ case.title }}</td>
+                <td class="autocut">{{ case.server }}</td>
+                <td class="autocut">{{ case.script_name }}</td>
+                <td class="autocut">{{ case.sprint }}</td>
+                <td class="autocut">{{ case.user_name }}</td>
                 <td>
                     <script>
                         switch({{ case.mock_status }}){
@@ -66,7 +66,7 @@
                         document.write(getLocalTime({{ case.create_time }}));
                     </script>
                 </td>
-                <td>
+                <td class="autocut">
                     <a href="{{ url_for('reset_case', id=case.id) }}" class="btn btn-warning" role ="button">重置</a>
                     <a href="{{ url_for('change_case', id=case.id) }}" class="btn btn-success" role ="button">修改</a>
                     {% if case.mock_status %}
@@ -95,6 +95,7 @@
     </tbody>
 
 </table>
+
 <div class="text-center">
     <ul class="pagination">
            {% if page_data.show_index_status==1%}

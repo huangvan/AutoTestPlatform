@@ -22,7 +22,7 @@ from forms import CaseModifyForm, LoginForm, CaseAddForm, CaseMockForm, CaseRese
 from orm import db, login_manager
 from models import CaseList, User
 from Mock.mock import MockRecordManage
-from Mock.config import base_url, wiremock_url, wiremock_port
+from Mock.config import base_url, wiremock_url, wiremock_port, db_host, db_user, db_pwd
 
 SECRET_KEY = 'This is my key'
 
@@ -30,7 +30,7 @@ app = Flask(__name__)
 bootstrap = Bootstrap(app)
 
 app.secret_key = SECRET_KEY
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://gj:xbrother@192.168.3.250/platform'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://' + db_user + ':' + db_pwd + '@' + db_host + '/platform'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
 
@@ -111,13 +111,18 @@ def get_user_data(username):
 # 统计迭代维度的用例情况
 def get_sprint_data(server):
     list_count = []
-    case_count = CaseList.query.filter_by(server=server).count()
+    sprint_list = CaseList.query.filter(CaseList.server == server).from_self().order_by(CaseList.sprint.desc()).first()
+    if sprint_list:
+        sprint = sprint_list.sprint
+    else:
+        sprint = None
+    case_count = CaseList.query.filter(CaseList.server == server, CaseList.sprint == sprint).count()
     list_count.append(case_count)
-    mock_count = CaseList.query.filter(CaseList.server == server, CaseList.mock_status == 1).count()
+    mock_count = CaseList.query.filter(CaseList.server == server, CaseList.sprint == sprint, CaseList.mock_status == 1).count()
     list_count.append(mock_count)
-    run_count = CaseList.query.filter(CaseList.server == server, CaseList.status > 0).count()
+    run_count = CaseList.query.filter(CaseList.server == server, CaseList.sprint == sprint, CaseList.status > 0).count()
     list_count.append(run_count)
-    pass_count = CaseList.query.filter(CaseList.server == server, CaseList.status == 1).count()
+    pass_count = CaseList.query.filter(CaseList.server == server, CaseList.sprint == sprint, CaseList.status == 1).count()
     list_count.append(pass_count)
     if case_count == 0:
         list_count.append('0.00%')
@@ -125,6 +130,7 @@ def get_sprint_data(server):
     else:
         list_count.append("%.2f%%" % (run_count / case_count * 100))
         list_count.append("%.2f%%" % (pass_count / case_count * 100))
+    list_count.append(sprint)
     return list_count
 
 
@@ -174,13 +180,41 @@ def show_user_data():
         logging.debug(user.username)
         dic = {}
         user_list = get_user_data(user.username)
-        dic['name'] = user.username
+        dic['name'] = user.uname
         dic['case_count'] = user_list[0]
         dic['mock_count'] = user_list[1]
         dic['run_count'] = user_list[2]
         dic['pass_count'] = user_list[3]
         dic['run_rate'] = user_list[4]
         dic['pass_rate'] = user_list[5]
+        data.append(dic)
+    return json.dumps({'total': total, 'rows': data[int(offset):(int(offset) + int(limit))]})
+
+
+@app.route('/query/sprint/', methods=['POST'])
+@login_required
+def show_sprint_data():
+    server_list = ['QDD', 'SOS', 'terminal', 'BK&X', 'VIP', 'MS', 'OMG', 'BI']
+    info = request.values
+    limit = info.get('limit', 5)
+    offset = info.get('offset', 0)
+    order = info.get('order', 'asc')
+    total = len(server_list)
+    data = []
+    for server in server_list:
+        dic = {}
+        lis = get_sprint_data(server)
+        dic['server_name'] = server
+        if lis[6]:
+            dic['sprint'] = lis[6]
+        else:
+            dic['sprint'] = '-'
+        dic['case_count'] = lis[0]
+        dic['mock_count'] = lis[1]
+        dic['run_count'] = lis[2]
+        dic['pass_count'] = lis[3]
+        dic['run_rate'] = lis[4]
+        dic['pass_rate'] = lis[5]
         data.append(dic)
     return json.dumps({'total': total, 'rows': data[int(offset):(int(offset) + int(limit))]})
 
@@ -273,6 +307,7 @@ def change_case(id):
         caselist = CaseList.query.filter_by(id=id).first_or_404()
         form = CaseModifyForm()
         form.title.data = caselist.title
+        form.server.data = caselist.server
         form.script_name.data = caselist.script_name
         form.sprint.data = caselist.sprint
         return render_template('modify.html', form=form)
@@ -286,6 +321,7 @@ def change_case(id):
                 return redirect(url_for('change_case', id=id))
             else:
                 caselist.title = form.title.data
+                caselist.server = form.server.data
                 caselist.script_name_old = caselist.script_name
                 caselist.script_name = form.script_name.data
                 caselist.sprint = form.sprint.data

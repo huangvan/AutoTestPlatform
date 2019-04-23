@@ -31,7 +31,7 @@ class CaseList(db.Model):
     script = db.Column(db.Text, nullable=True)
     create_time = db.Column(db.Integer, nullable=False)
 
-    def __init__(self, user_id, user_name, title, server, mock_status, status, reset_status, script_name, script_name_old, script, sprint):
+    def __init__(self, user_id, user_name, title, server, mock_status, status, reset_status, script_name, script_name_old, sprint, script):
         self.user_id = user_id
         self.user_name = user_name
         self.title = title

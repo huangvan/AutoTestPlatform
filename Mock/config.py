@@ -24,14 +24,21 @@ wiremock_version = '2.21.0'
 wiremock_name = 'wiremock-standalone-' + wiremock_version + '.jar'
 wiremock_path = os.path.abspath(os.path.dirname(__file__))
 wiremock_port = '9090'
-# wiremock_url = 'http://10.44.88.167'  # k8s
-# wiremock_url = 'http://127.0.0.1'
-wiremock_url = 'http://10.118.71.237'   # 物理机
+# wiremock_url = 'http://10.44.88.28'  # k8s
+wiremock_url = 'http://127.0.0.1'
+# wiremock_url = 'http://10.118.71.237'   # 物理机
 base_url = "http://test-api.intra.casstime.com"
 # base_url = "http://www.w3school.com.cn"
 cmd = 'java ' + '-jar ' + wiremock_name + ' --port ' + wiremock_port + ' --verbose'
-logging.debug(wiremock_path)
-logging.debug(cmd)
+
+# 数据库管理
+db_host = '10.118.71.11'
+db_user = 'root'
+db_pwd = 'Casstime99@'
+# db_host = '192.168.3.250'
+# db_user = 'gj'
+# db_pwd = 'xbrother'
+
 
 # 用例管理
 case_no = {'QDD': 0, 'SOS': 0, 'MS': 0, 'OMG': 0, 'VIP': 0, 'BK&X': 0, 'terminal': 0}

@@ -19,6 +19,8 @@ from string import Template
 from config import *
 
 logging.basicConfig(level=level_name, format=FORMAT)
+logging.debug(wiremock_path)
+logging.debug(cmd)
 
 
 # 异常信息捕获

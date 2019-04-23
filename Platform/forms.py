@@ -16,6 +16,10 @@ from wtforms.validators import DataRequired, Length
 
 class CaseModifyForm(FlaskForm):
     title = StringField('用例', validators=[DataRequired(), Length(1, 1024)])
+    server = SelectField('服务', validators=[DataRequired('请选择服务')], choices=[('QDD', 'QDD'), ('VIP', 'VIP'),
+                                                                            ('MS', 'MS'), ('SOS', 'SOS'), ('OMG', 'OMG'),
+                                                                            ('BK&X', 'BK&X'), ('terminal', 'terminal'),
+                                                                            ('BI', 'BI'), ('ERP', 'ERP')])
     script_name = StringField('脚本名称', validators=[DataRequired(), Length(1, 256)])
     sprint = IntegerField('迭代版本', validators=[DataRequired()])
     submit = SubmitField('提交')

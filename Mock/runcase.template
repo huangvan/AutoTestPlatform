@@ -63,9 +63,9 @@ ${MAP}
 
 
 if __name__ == "__main__":
-    QDDTest.setup()
-    QDDTest.mapping()
-    QDDTest.run()
-    QDDTest.teardown()
+    ${CLASSNAME}.setup()
+    ${CLASSNAME}.mapping()
+    ${CLASSNAME}.run()
+    ${CLASSNAME}.teardown()
 
 

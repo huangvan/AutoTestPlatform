@@ -98,7 +98,7 @@
     var sprint = $('#table3');
     sprint.bootstrapTable({
     method: 'post',
-    url:'/query/server/',
+    url:'/query/sprint/',
     dataType : "json",
     contentType : "application/x-www-form-urlencoded",
     pagination: true,//是否分页
@@ -113,6 +113,8 @@
     columns: [
         { field: 'server_name',
         title: '服务'},
+        { field: 'sprint',
+        title: '迭代版本'},
           { field: 'case_count',
         title: '用例数量'},
           { field: 'mock_count',
